@@ -4,10 +4,10 @@ const AppError = require("../utils/AppError");
 class MovieNotesController {
   async create(request, response) {
     const { title, description, rating, movie_tags } = request.body;
-    const { user_id } = request.params;
+    const user_id = request.user.id;
 
     if (rating < 0 || rating > 5) {
-      throw new AppError("A nota deve ser entre 0 e 5");
+      throw new AppError("The note must be between 0 and 5");
     }
 
     const movie_notes_id = await knex("movie_notes").insert({
@@ -26,7 +26,7 @@ class MovieNotesController {
     });
     await knex("movie_tags").insert(tagsInsert);
 
-    response.json();
+    return response.json();
   }
 
   async show(request, response) {
@@ -52,7 +52,9 @@ class MovieNotesController {
   }
 
   async index(request, response) {
-    const { title, user_id, movie_tags } = request.query;
+    const { title, movie_tags } = request.query;
+
+    const user_id = request.user.id;
 
     let notes;
 
